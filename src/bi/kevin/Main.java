@@ -88,7 +88,7 @@ public class Main {
         System.out.println(solverGenerator.createSolver());
 
         //solver with custom values
-        solverGenerator = new SolverGenerator("train_net.prototxt", "test_net.prototxt", 50, 1000, 5000, (float) 0.1,
+        solverGenerator = new SolverGenerator("train_net.prototxt", "test_net.prototxt", 50, (float) 0.1,
                 (float) 0.5, (float) 0.5, (float) 0, (float) 0.00001);
         System.out.println("Example Solver with Customization");
         System.out.println(solverGenerator.createSolver());

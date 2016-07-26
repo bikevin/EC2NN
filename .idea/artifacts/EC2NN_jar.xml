@@ -3,8 +3,8 @@
     <output-path>$PROJECT_DIR$/out/artifacts/EC2NN_jar</output-path>
     <root id="archive" name="EC2NN.jar">
       <element id="module-output" name="EC2NN" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/libs/jsch-0.1.53.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/libs/protobuf-java-3.0.0-beta-4.jar" path-in-jar="/" />
+      <element id="library" level="project" name="sshj-0.17.2" />
     </root>
   </artifact>
 </component>
