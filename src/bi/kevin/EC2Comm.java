@@ -1,9 +1,7 @@
 package bi.kevin;
 
 import net.schmizz.sshj.SSHClient;
-import net.schmizz.sshj.connection.ConnectionException;
 import net.schmizz.sshj.connection.channel.direct.Session;
-import net.schmizz.sshj.transport.TransportException;
 import net.schmizz.sshj.transport.verification.PromiscuousVerifier;
 import net.schmizz.sshj.userauth.keyprovider.PKCS8KeyFile;
 
