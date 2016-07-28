@@ -34,6 +34,7 @@ if len(sys.argv) == 6:
 	solver.net.copy_from(sys.argv[5])
 if len(sys.argv) == 7:
 	solver.restore(sys.argv[6])
+	solver.test_nets[0].restore(sys.argv[6])
 
 niter = int(sys.argv[2])
 test_interval = int(sys.argv[3])
