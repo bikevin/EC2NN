@@ -93,6 +93,14 @@ public class Main {
         System.out.println("Example Solver with Customization");
         System.out.println(solverGenerator.createSolver());
 
+        //EXAMPLE STUFF - TO USE, UNCOMMENT AND REPLACE FILE PATHS WITH YOUR OWN
+        //sends a file to server and deletes it
+//
+//        EC2Comm ec2Comm = new EC2Comm("ec2-54-152-208-18.compute-1.amazonaws.com", "/path/to/neuralnetwork.pem");
+//        String[] filePaths = {"/path/to/your/file"};
+//        ec2Comm.transferFilesToServer(filePaths, "");
+//        ec2Comm.cleanUp();
+
     }
 
 

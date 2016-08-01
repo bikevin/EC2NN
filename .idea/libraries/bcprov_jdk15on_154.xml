@@ -2,6 +2,7 @@
   <library name="bcprov-jdk15on-154">
     <CLASSES>
       <root url="jar://$PROJECT_DIR$/libs/bcprov-jdk15on-154.jar!/" />
+      <root url="jar://$PROJECT_DIR$/libs/bcpkix-jdk15on-154.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
