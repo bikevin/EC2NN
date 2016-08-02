@@ -104,7 +104,7 @@ public class EC2Comm {
     }
 
     public int cleanUp(){
-        String cleanCommand = "find ~/ -maxdepth 1 ! -name \"net_trainer.py\" -type f -exec rm -f {} \\;";
+        String cleanCommand = "find ~/ -maxdepth 1 ! -name \"net_trainer.py\" ! -name \"rsquared.py\" ! -name \"rsquared.pyc\" -type f -exec rm -f {} \\;";
         String snapCleanCommand = "rm /snapshot/*";
         try {
             session = newSession();
