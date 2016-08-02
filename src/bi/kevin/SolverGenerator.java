@@ -12,6 +12,7 @@ public class SolverGenerator {
     private float momentum = 0.9f;
     private float weight_decay = 0.005f;
     private float base_lr = 0.01f;
+    private int train_iter = 10;
 
     public SolverGenerator(String train_net, String test_net){
         this.train_net = train_net;
@@ -19,7 +20,7 @@ public class SolverGenerator {
     }
 
     public SolverGenerator(String train_net, String test_net, int snapshot,
-                           float gamma, float power, float momentum, float weight_decay, float base_lr){
+                           float gamma, float power, float momentum, float weight_decay, float base_lr, int train_iter){
         this.test_net = test_net;
         this.train_net = train_net;
         this.snapshot = snapshot;
@@ -28,6 +29,7 @@ public class SolverGenerator {
         this.momentum = momentum;
         this.weight_decay = weight_decay;
         this.base_lr = base_lr;
+        this.train_iter = train_iter;
     }
 
     public String createSolver(){
@@ -36,7 +38,7 @@ public class SolverGenerator {
 
         solver.setTrainNet(train_net).addTestNet(test_net)
                 .setSnapshot(snapshot).setLrPolicy(lr_policy).setSnapshotPrefix(snapshot_prefix).setGamma(gamma)
-                .setPower(power).setMomentum(momentum).setWeightDecay(weight_decay).setBaseLr(base_lr);
+                .setPower(power).setMomentum(momentum).setWeightDecay(weight_decay).setBaseLr(base_lr).addTestIter(train_iter);
 
         return TextFormat.printToString(solver);
     }
