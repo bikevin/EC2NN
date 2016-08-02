@@ -130,7 +130,7 @@ public class NetGenerator {
 
         Caffe.LayerParameter.Builder[] outParams = new Caffe.LayerParameter.Builder[3];
 
-        outputLayer.setName("innerBottom").setInnerProductParam(Caffe.InnerProductParameter.newBuilder()
+        outputLayer.setName("innerBottom").setType("InnerProduct").setInnerProductParam(Caffe.InnerProductParameter.newBuilder()
                 .setNumOutput(layer.getNeurons()).setWeightFiller(Caffe.FillerParameter.newBuilder().setType("xavier"))).addTop("innerBottom");
         outParams[0] = outputLayer;
 
