@@ -38,17 +38,17 @@ public class EC2Comm {
     }
 
     public int transferFilesToServer(String[] localFilePaths, String remoteDir){
-        for(String filePath : localFilePaths){
             try {
-                sshClient.newSCPFileTransfer().upload(filePath, remoteDir);
+                for(String filePath : localFilePaths) {
+                    sshClient.newSCPFileTransfer().upload(filePath, remoteDir);
+                }
                 System.out.println("Transfer Complete");
                 return 0;
             } catch (IOException e) {
                 e.printStackTrace();
+                return -1;
             }
-        }
 
-        return -1;
     }
 
     public int trainNet(String localDir, String solverFilePath, int trainIters, int testInterval, int testIters, String[] optional){
@@ -63,12 +63,13 @@ public class EC2Comm {
             session = newSession();
             cmd = session.exec(shellCommand);
             cmd.join();
+            System.out.println("Training Complete");
             transferOutputsToLocal(localDir);
             return 0;
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        System.out.println("Training Failed");
         return -1;
     }
 
@@ -82,6 +83,7 @@ public class EC2Comm {
             for(String fileName : fileNames) {
                 sshClient.newSCPFileTransfer().download(fileName, localDir);
             }
+            System.out.println("Download Complete");
         } catch (IOException e) {
             e.printStackTrace();
         }
