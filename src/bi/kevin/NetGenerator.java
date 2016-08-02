@@ -88,7 +88,7 @@ public class NetGenerator {
 
         hiddenLayer.setName("inner" + String.valueOf(index)).setType("InnerProduct")
                 .setInnerProductParam(Caffe.InnerProductParameter.newBuilder().setNumOutput(layer.getNeurons())
-                        .setWeightFiller(Caffe.FillerParameter.newBuilder().setType("xavier"))).addBottom("inner" + String.valueOf(index));
+                        .setWeightFiller(Caffe.FillerParameter.newBuilder().setType("xavier"))).addTop("inner" + String.valueOf(index));
         outParams[0] = hiddenLayer;
 
         hiddenLayer = Caffe.LayerParameter.newBuilder();
