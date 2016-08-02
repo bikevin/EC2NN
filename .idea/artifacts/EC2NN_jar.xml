@@ -4,6 +4,12 @@
     <root id="archive" name="EC2NN.jar">
       <element id="module-output" name="EC2NN" />
       <element id="extracted-dir" path="$PROJECT_DIR$/libs/protobuf-java-3.0.0-beta-4.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/bcprov-jdk15on-154.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/bcpkix-jdk15on-154.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/ecc-25519-java-1.0.3.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/eddsa-0.1.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/slf4j-api-1.7.21.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/sshj-0.17.2.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>
