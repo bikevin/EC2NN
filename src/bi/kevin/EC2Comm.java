@@ -53,7 +53,7 @@ public class EC2Comm {
 
     public int trainNet(String localDir, String solverFilePath, int trainIters, int testInterval, int testIters, String[] optional){
 
-        String shellCommand = "net_trainer.py " + solverFilePath + " " + String.valueOf(trainIters)
+        String shellCommand = "python net_trainer.py " + solverFilePath + " " + String.valueOf(trainIters)
                 + " " + String.valueOf(testInterval) + " " + String.valueOf(testIters);
         for(String string : optional){
             shellCommand += " " + string;
