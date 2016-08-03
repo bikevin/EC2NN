@@ -96,7 +96,8 @@ public class Main {
         //EXAMPLE STUFF - TO USE, UNCOMMENT AND REPLACE FILE PATHS WITH YOUR OWN
         //sends a file to server and deletes it
 //
-//        EC2Comm ec2Comm = new EC2Comm("ec2-54-152-208-18.compute-1.amazonaws.com", "/path/to/neuralnetwork.pem");
+        EC2Comm ec2Comm = new EC2Comm("ec2-54-152-208-18.compute-1.amazonaws.com", "c:/users/kevin/downloads/neuralnetwork.pem");
+        ec2Comm.trainNet("C:/users/kevin/downloads", "solver", 100, 50, 3, new String[0]);
 //        String[] filePaths = {"/path/to/your/file"};
 //        ec2Comm.transferFilesToServer(filePaths, "");
 //        ec2Comm.cleanUp();
