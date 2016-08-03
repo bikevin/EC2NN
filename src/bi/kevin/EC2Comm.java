@@ -67,10 +67,10 @@ public class EC2Comm {
         try {
             session = newSession();
             cmd = session.exec(shellCommand);
-            System.out.println(IOUtils.readFully(cmd.getErrorStream()).toString());
-            System.out.println(IOUtils.readFully(cmd.getInputStream()).toString());
             outputs[0] = IOUtils.readFully(cmd.getErrorStream()).toString();
             outputs[1] = IOUtils.readFully(cmd.getInputStream()).toString();
+            System.out.println(outputs[0]);
+            System.out.println(outputs[1]);
             cmd.join();
             transferOutputsToLocal(localDir);
             return outputs;
@@ -100,6 +100,17 @@ public class EC2Comm {
         }
     }
 
+    public void transferFilesToLocal(String localDir, String[] fileNames){
+        try {
+            for(String fileName : fileNames) {
+                sshClient.newSCPFileTransfer().download(fileName, localDir);
+            }
+            System.out.println("Download Complete");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public String stopTraining(){
         try {
             session = newSession();
@@ -115,7 +126,8 @@ public class EC2Comm {
     }
 
     public int cleanUp(){
-        String cleanCommand = "find ~/ -maxdepth 1 ! -name \"net_trainer.py\" ! -name \"rsquared.py\" ! -name \"rsquared.pyc\" -type f -exec rm -f {} \\;";
+        String cleanCommand = "find ~/ -maxdepth 1 ! -name \"net_trainer.py\" ! -name \"rsquared.py\" " +
+                "! -name \"rsquared.pyc\" ! -name \"csvToh5.py\" -type f -exec rm -f {} \\;";
         String snapCleanCommand = "rm snapshot/*";
         try {
             session = newSession();
@@ -130,6 +142,21 @@ public class EC2Comm {
             e.printStackTrace();
         }
 
+        return -1;
+    }
+
+    public int csvToH5(String dataCSV, String labelCSV, String h5FileName, String localDir){
+        String h5Command = "python csvToh5.py " + dataCSV + " " + labelCSV + " " + h5FileName;
+        String[] outputs = {h5FileName};
+        try {
+            session = newSession();
+            cmd = session.exec(h5Command);
+            cmd.join(1, TimeUnit.SECONDS);
+            transferFilesToLocal(localDir, outputs);
+            return 0;
+        } catch (IOException e){
+            e.printStackTrace();
+        }
         return -1;
     }
 
