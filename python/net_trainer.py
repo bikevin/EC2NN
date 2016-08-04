@@ -1,7 +1,8 @@
-import caffe
 import sys
+sys.path.append('/home/ubuntu/caffe-master/python')
+import caffe
 import os.path
-import rsquared
+import rsquared as r2
 from pylab import *
 
 caffe.set_mode_cpu()
@@ -53,6 +54,7 @@ for it in range(niter):
 	if it % test_interval == 0:
 		for test_it in range(int(sys.argv[4])):
 			solver.test_nets[0].forward()	
+		print solver.test_nets[0].blobs['loss'].data
 		test_loss[int(it / test_interval)] = solver.test_nets[0].blobs['loss'].data
 		rsquared[it / test_interval] = r2.calculateR2(solver.test_nets[0].blobs['innerBottom'].data, solver.test_nets[0].blobs['label'].data)
 
@@ -62,7 +64,7 @@ close()
 plot(arange(trainingNum), test_loss)
 savefig('test_loss.png')
 close()
-plot(arange(trainingNum, rsquared))
+plot(arange(trainingNum), rsquared)
 savefig('rsquared.png')
 close()
 
