@@ -1,73 +1,79 @@
-import numpy as np
-import matplotlib.pyplot as plt
-from pylab import *
 import caffe
-import h5py
-import copy
+import matplotlib.pyplot as plt
+import numpy as np
 import sys
+import h5py
+import os
 
 caffe.set_mode_cpu()
 
-#check arguments
-if len(sys.argv) != 3:
-	exit("Error: Incorrect number of arguments. \nUsage: net_analyzer.py <file path to model prototxt> <file path to .caffemodel file>")
+if len(sys.argv) != 4:
+	exit("Error: Incorrect number of arguments. \nUsage: net_analyzer.py <file path to model prototxt> <file path to .caffemodel file> <filepath to testing data>")
 
-#function that returns the correct function given a type
-def derivPicker(neuronType):
-        #define the partial derivative functions
-        def SigDeriv(x):
-                return x * (1 - x)
+if not os.path.isfile(sys.argv[1]):
+	exit("Error: File path to net prototxt is invalid.")
+if not os.path.isfile(sys.argv[2]):
+	exit("Error: File path to .caffemodel file is invalid.")
+if not os.path.isfile(sys.argv[3]):
+	exit("Error: File path to testing data is invalid.")
 
-        def TanHDeriv(x):
-                return (1 - x * x)
-
-        def ReLUDeriv(x):
-                if x > 0:
-                        return 1
-                else:
-                        return 0
-        if neuronType == "TanH":
-                return TanHDeriv
-        elif neuronType == "Sigmoid":
-                return SigDeiv
-        elif neuronType == "ReLU":
-                return ReLUDeriv
-        else:
-                return 0
-
-def calcInputDerivs(net, layerArray, index, currentValue, inputIndex, neuronIndex):
-        layerType = layerArray[index]
-        numNeuronsNext = net.layers[index + 1].blobs[0].data[inputIndex].shape(0)
-        if :#how to get name of layer? check layer name here for base case - if it's SigmoidBottom, ReLUBottom, or TanHBottom
-                for i in range(numNeuronsNext):
-                        calcInputDerivativesBase(net, layerArray, index, currentValue, i);
-        if layerType == "HDF5Data":
-                return 0
-        elif layerType == "InnerProduct":
-                retVal = 0
-                for i in range(numNeuronsNext):
-                        retVal += calcInputDerivs(net, layerArray, index += 1, currentValue * net.layers[index].blobs[0].data[inputIndex][neuronIndex], inputIndex, i)
-                return retVal
-        else:
-                retVal = 0
-                for i in range(numNeuronsNext):
-                        retVal += calcInputDerivs(net, layerArray, index += 1, currentValue * derivPicker(layerType)(net.layers[index].blobs[0].data[neuronIndex]), inputIndex, i)
-                return retVal
-
-def calcInputDerivsBase(net, layerArray, index, currentValue, neuronIndex):
-        return currentValue * derivPicker(layerArray[index])(net.layers[index].blobs[0].data[neuronIndex])
+data = h5py.File(sys.argv[3], 'r')
 
 
 
-
-#generate the net
+refNet = caffe.Net(str(sys.argv[1]), str(sys.argv[2]), caffe.TEST)
 net = caffe.Net(str(sys.argv[1]), str(sys.argv[2]), caffe.TEST)
 
-for i in range(net.blob("data").shape(0)):
-        for j in range(net.blob("inner1").shape(0)):
-                print calcInputDerivs(net, net.layers.type, 0, i, j);
+reference = np.zeros((1, refNet.blobs['data'].data.shape[1]))
+refNet.blobs['data'].data[...] = reference
+#double check this starting point
+#refNet.forward(start='Inner1')
+refNet.forward(start='inner1')
 
+for layer in net.layers:
+	print layer.type
+for name in net._layer_names:
+	print name
 
-#TODO NEXT:
-#holy shit test this pile of cancer
+finalValues = [1] * data.get('data').shape[1]
+for k in range(data.get('data').shape[0]):
+	multipliers = tuple()
+	layerTypes = []
+	for i in range(net.layers.__len__()):
+		layerType = net.layers[i].type
+		if layerType == "InnerProduct":
+			multipliers += tuple(net.layers[i].blobs[0].data)
+			layerTypes.append(layerType)
+		elif layerType == "TanH" or layerType == "Sigmoid" or layerType == "ReLU":
+			multipliers = tuple(net.blobs[net._layer_names[i]].data - refNet.blobs[net._layer_names[i]].data)
+			layerTypes.append("Nonlinearity")
+		else:
+			continue
+	currentValues = []
+	#populate currentValues
+	for value in multipliers[multipliers.shape[0] - 1]:
+		currentValues.append(value[0])
+	for i in range(layerTypes.__len__()):
+		#have to go backwards in multiplier tuple
+		pos = multipliers.shape[0] - i
+		newVals = []
+		for j in range(multipliers[pos].shape[1]):
+			if layerTypes[pos] == "InnerProduct":
+				temp = 0
+				for l in range(multipliers[pos].shape[0]):
+					temp += multipliers[pos][l][j] * currentValues[l]
+				newVals.append(temp)
+			else:
+				newVals.append(currentValues[j] * multipliers[pos][0][j])
+		currentValues = newValues
 
+	deltaInput = net.blobs['data'].data - refNet.blobs['data'].data
+	for i in range(deltaInput.shape[1]):
+		currentValues[i] *= deltaInput[0][i]
+		finalValues[i] += currentValues[i]
+	
+plt.bar(range(currentValues.__len__()), currentValues)
+plt.savefig('images/importance.png')
+plt.close()
+print "Analysis Complete"
+		
