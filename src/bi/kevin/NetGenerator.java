@@ -93,7 +93,7 @@ public class NetGenerator {
 
         hiddenLayer = Caffe.LayerParameter.newBuilder();
         hiddenLayer.setName(possibleNames[layer.getLayerType()] + String.valueOf(index))
-                .setType(possibleNames[layer.getLayerType()]).addTop("inner" + String.valueOf(index))
+                .setType(possibleNames[layer.getLayerType()]).addTop(possibleNames[layer.getLayerType()] + String.valueOf(index))
                 .addBottom("inner" + String.valueOf(index));
         outParams[1] = hiddenLayer;
 
@@ -137,17 +137,17 @@ public class NetGenerator {
         outputLayer = Caffe.LayerParameter.newBuilder();
 
         outputLayer.setName(possibleNames[layer.getLayerType()] + "Bottom")
-                .setType(possibleNames[layer.getLayerType()]).addTop("innerBottom")
+                .setType(possibleNames[layer.getLayerType()]).addTop(possibleNames[layer.getLayerType()] + "Bottom")
                 .addBottom("innerBottom");
         outParams[1] = outputLayer;
 
         outputLayer = Caffe.LayerParameter.newBuilder();
         if(layer.getNeurons() == 1){
-            outputLayer.setName("loss").setType("EuclideanLoss").addBottom("innerBottom").addBottom("label")
+            outputLayer.setName("loss").setType("EuclideanLoss").addBottom(possibleNames[layer.getLayerType()] + "Bottom").addBottom("label")
                     .addTop("loss");
             outParams[2] = outputLayer;
         } else {
-            outputLayer.setName("loss").setType("SoftmaxWithLoss").addBottom("innerBottom").addBottom("label")
+            outputLayer.setName("loss").setType("SoftmaxWithLoss").addBottom(possibleNames[layer.getLayerType()] + "Bottom").addBottom("label")
                     .addTop("loss");
             outParams[2] = outputLayer;
         }

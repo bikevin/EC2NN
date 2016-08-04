@@ -84,17 +84,48 @@ public class EC2Comm {
 
     public void transferOutputsToLocal(String localDir){
         String[] fileNames = {"train_loss.png", "test_loss.png", "rsquared.png", "snapshot.tar.gz"};
-        String compressCommand = "tar -zcvf snapshot.tar.gz snapshot";
+        String snapCompress = "tar -zcvf snapshot.tar.gz snapshot";
         try {
             session = newSession();
-            cmd = session.exec(compressCommand);
+            cmd = session.exec(snapCompress);
             System.out.println(IOUtils.readFully(cmd.getErrorStream()).toString());
             System.out.println(IOUtils.readFully(cmd.getInputStream()).toString());
             cmd.join(5, TimeUnit.SECONDS);
+
             for(String fileName : fileNames) {
                 sshClient.newSCPFileTransfer().download(fileName, localDir);
             }
             System.out.println("Download Complete");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void analyzeNet(String localDir, String modelFile, String caffeModelFile, String dataFile){
+        try {
+            String command = "python net_analyzer.py " + modelFile + " " + caffeModelFile + " " + dataFile;
+            session = newSession();
+            cmd = session.exec(command);
+            cmd.join(5, TimeUnit.SECONDS);
+
+            transferAnalysisToLocal(localDir);
+            System.out.println("Analysis Complete");
+        } catch(IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void transferAnalysisToLocal(String localDir){
+        String imageCompress = "tar -zcvf images.tar.gz image";
+        String[] fileNames = {"images.tar.gz"};
+        try {
+            session = newSession();
+            cmd = session.exec(imageCompress);
+            System.out.println(IOUtils.readFully(cmd.getErrorStream()).toString());
+            System.out.println(IOUtils.readFully(cmd.getInputStream()).toString());
+            cmd.join(5, TimeUnit.SECONDS);
+
+            transferFilesToLocal(localDir, fileNames);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -127,14 +158,18 @@ public class EC2Comm {
 
     public int cleanUp(){
         String cleanCommand = "find ~/ -maxdepth 1 ! -name \"net_trainer.py\" ! -name \"rsquared.py\" " +
-                "! -name \"rsquared.pyc\" ! -name \"csvToh5.py\" -type f -exec rm -f {} \\;";
+                "! -name \"rsquared.pyc\" ! -name \"csvToh5.py\" ! -name \"net_analzyer.py\" w-type f -exec rm -f {} \\;";
         String snapCleanCommand = "rm snapshot/*";
+        String imageCleanCommand = "rm image/*";
         try {
             session = newSession();
             cmd = session.exec(cleanCommand);
             cmd.join(1, TimeUnit.SECONDS);
             session = newSession();
             cmd = session.exec(snapCleanCommand);
+            cmd.join(1, TimeUnit.SECONDS);
+            session = newSession();
+            cmd = session.exec(imageCleanCommand);
             cmd.join(1, TimeUnit.SECONDS);
             System.out.println("Cleaned");
             return 0;
