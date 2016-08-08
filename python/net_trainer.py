@@ -7,17 +7,23 @@ from pylab import *
 
 caffe.set_mode_cpu()
 
-if len(sys.argv) != 5 and len(sys.argv) != 6 and len(sys.argv) != 7:
-	exit("Error: Incorrect number of arguments. \nUsage: net_trainer.py <file path to solver> <iterations to train> <iterations between tests> <iterations per test> <model file path (optional)> <solverstate file path (optional)>")
+if len(sys.argv) != 6 and len(sys.argv) != 7 and len(sys.argv) != 8:
+        exit("Error: Incorrect number of arguments. \nUsage: net_trainer.py <file path to solver> <iterations to train> <iterations between tests> <iterations per test> <userdir> <model file path (optional)> <solverstate file path (optional)>")
 
-if not os.path.isfile(sys.argv[1]):
-	exit("Error: File path to solver is invalid.")
-if len(sys.argv) >= 6:
-	if not os.path.isfile(sys.argv[5]):
-		exit("Error: File path to model file is invalid.")
-	if len(sys.argv) == 7:
-		if not os.path.isfile(sys.argv[6]):
-			exit("Error: File path to solverstate file is invalid.")
+solverFilePath = sys.argv[5] + '/' + sys.argv[1]
+modelFilePath = ''
+stateFilePath = ''
+
+if not os.path.isfile(solverFilePath):
+        exit("Error: File path to solver is invalid.")
+if len(sys.argv) >= 7:
+        if not os.path.isfile(modelFilePath):
+                exit("Error: File path to model file is invalid.")
+        modelFilePath = sys.argv[5] + '/' + sys.argv[6]
+        if len(sys.argv) == 8:
+                if not os.path.isfile(stateFilePath):
+                        exit("Error: File path to solverstate file is invalid.")
+                stateFilePath = sys.argv[5] + '/' + sys.argv[7]
 
 try:
 	int(sys.argv[2])
@@ -29,13 +35,14 @@ except ValueError:
 if int(sys.argv[3]) == 0:
 	exit("Error: Iterations between tests must be greater than zero")
 
-solver = caffe.SGDSolver(sys.argv[1])
+solver = caffe.SGDSolver(solverFilePath)
 
-if len(sys.argv) == 6:
-	solver.net.copy_from(sys.argv[5])
 if len(sys.argv) == 7:
-	solver.restore(sys.argv[6])
-	solver.test_nets[0].restore(sys.argv[6])
+        solver.net.copy_from(modelFilePath)
+        solver.test_nets[0].copy_from(modelFilePath)
+if len(sys.argv) == 7:
+        solver.restore(stateFilePath)
+        solver.test_nets[0].restore(stateFilePath)
 
 niter = int(sys.argv[2])
 test_interval = int(sys.argv[3])
@@ -58,15 +65,19 @@ for it in range(niter):
 		test_loss[int(it / test_interval)] = solver.test_nets[0].blobs['loss'].data
 		rsquared[it / test_interval] = r2.calculateR2(solver.test_nets[0].blobs['innerBottom'].data, solver.test_nets[0].blobs['label'].data)
 
-plot(arange(niter), train_loss)
-savefig('train_loss.png')
-close()
-plot(arange(trainingNum), test_loss)
-savefig('test_loss.png')
-close()
-plot(arange(trainingNum), rsquared)
-savefig('rsquared.png')
-close()
+#plot(arange(niter), train_loss)
+#savefig(sys.argv[5] + '/train_loss.png')
+#close()
+#plot(arange(trainingNum), test_loss)
+#savefig(sys.argv[5] + '/test_loss.png')
+#close()
+#plot(arange(trainingNum), rsquared)
+#savefig(sys.argv[5] + '/rsquared.png')
+#close()
+
+np.savetxt(sys.argv[5] + '/train_loss.out', train_loss, delimiter=',')
+np.savetxt(sys.argv[5] + '/test_loss.out', test_loss, delimiter=',')
+np.savetxt(sys.argv[5] + '/rsquared.out', rsquared, delimiter=',')
 
 print "\nTraining complete."
 

@@ -96,10 +96,19 @@ public class Main {
         //EXAMPLE STUFF - TO USE, UNCOMMENT AND REPLACE FILE PATHS WITH YOUR OWN
         //sends a file to server and deletes it
 //
-        EC2Comm ec2Comm = new EC2Comm("ec2-54-152-208-18.compute-1.amazonaws.com", "c:/users/kevin/downloads/neuralnetwork.pem");
-        ec2Comm.trainNet("C:/users/kevin/downloads", "solver", 100, 50, 3, new String[0]);
-//        String[] filePaths = {"/path/to/your/file"};
-//        ec2Comm.transferFilesToServer(filePaths, "");
+        EC2Comm ec2Comm = new EC2Comm("ec2-54-152-208-18.compute-1.amazonaws.com", "/home/kevin/Downloads/neuralnetwork.pem", "test");
+//        ec2Comm.trainNet("solver", 100, 50, 3, new String[0]);
+        String[] filePaths = {"/home/kevin/Documents/NN/beets/beet_net.prototxt",
+                "/home/kevin/Documents/NN/beets/beet_solver.prototxt",
+                "/home/kevin/Documents/NN/beets/training_files",
+                "/home/kevin/Documents/NN/beets/testing_files",
+                "/home/kevin/Documents/NN/beets/train.h5",
+                "/home/kevin/Documents/NN/beets/validate.h5"};
+
+ //       ec2Comm.transferFilesToServer(filePaths, "");
+ //       ec2Comm.trainNet("beet_solver.prototxt", 100, 50, 3, new String[0]);
+//        ec2Comm.drawNet("beet_net.prototxt", "image.png");
+        ec2Comm.transferOutputsToLocal("/home/kevin/Documents");
 //        ec2Comm.cleanUp();
 
     }
