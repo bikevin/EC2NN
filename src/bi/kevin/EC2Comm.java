@@ -39,10 +39,16 @@ public class EC2Comm {
             sshClient.authPublickey("ubuntu", keyFile);
             session = sshClient.startSession();
             cmd = session.exec("mkdir " + remoteDir);
+            System.out.println(IOUtils.readFully(cmd.getErrorStream()).toString());
+            System.out.println(IOUtils.readFully(cmd.getInputStream()).toString());
             session = newSession();
             cmd = session.exec("mkdir " + remoteDir + "/snapshot");
+            System.out.println(IOUtils.readFully(cmd.getErrorStream()).toString());
+            System.out.println(IOUtils.readFully(cmd.getInputStream()).toString());
             session = newSession();
             cmd = session.exec("mkdir " + remoteDir + "/image");
+            System.out.println(IOUtils.readFully(cmd.getErrorStream()).toString());
+            System.out.println(IOUtils.readFully(cmd.getInputStream()).toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
