@@ -44,7 +44,7 @@ public class Main {
         layers[3] = new Layer(2, 1);
 
         //create a NetGenerator object - only one constructor, takes array of layers
-        NetGenerator netGenerator = new NetGenerator(layers);
+        NetGenerator netGenerator = new NetGenerator(layers, "test");
         System.out.println("Example Neural Network:");
         System.out.println(netGenerator.createNet());
 
@@ -89,7 +89,7 @@ public class Main {
 
         //solver with custom values
         solverGenerator = new SolverGenerator("train_net.prototxt", "test_net.prototxt", 50, (float) 0.1,
-                (float) 0.5, (float) 0.5, (float) 0, (float) 0.00001);
+                (float) 0.5, (float) 0.5, (float) 0, (float) 0.00001, "test");
         System.out.println("Example Solver with Customization");
         System.out.println(solverGenerator.createSolver());
 

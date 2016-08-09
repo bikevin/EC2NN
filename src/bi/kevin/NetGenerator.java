@@ -11,9 +11,11 @@ import java.util.List;
 public class NetGenerator {
 
     private Layer[] netLayers = new Layer[0];
+    private String userDir = "";
 
-    public NetGenerator(Layer[] layers){
+    public NetGenerator(Layer[] layers, String userDir){
         this.netLayers = layers;
+        this.userDir = userDir;
     }
 
     //What do we care about for the network design?
@@ -113,7 +115,7 @@ public class NetGenerator {
         Caffe.LayerParameter.Builder dataLayer = Caffe.LayerParameter.newBuilder();
         dataLayer.setName("data").setType("HDF5Data").addTop("data").addTop("label")
                 .setHdf5DataParam(Caffe.HDF5DataParameter.newBuilder()
-                        .setSource(layer.getDataFile()).setBatchSize(layer.getBatchSize()).build());
+                        .setSource(userDir + "/" + layer.getDataFile()).setBatchSize(layer.getBatchSize()).build());
         if(layer.getPhase() == 1){
             dataLayer.addInclude(Caffe.NetStateRule.newBuilder().setPhase(Caffe.Phase.TRAIN));
         } else if(layer.getPhase() == 2){
