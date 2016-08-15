@@ -3,6 +3,7 @@ sys.path.append('/home/ubuntu/caffe-master/python')
 import caffe
 import os.path
 import rsquared as r2
+import numpy as np
 from pylab import *
 
 caffe.set_mode_cpu()
@@ -27,3 +28,10 @@ if not os.path.isfile(testFilePath):
 data = h5py.File(testFilePath, 'r')
 
 net = caffe.Net(str(netFilePath), str(modelFilePath), caffe.TEST)
+net.forward()
+
+#make sure the predict network doesn't have a loss layer, but there's no real check for that
+
+np.savetxt(sys.argv[4] + '/predict.out', net.blobs[net._blob_names[-1]].data, delimiter=',')
+
+
