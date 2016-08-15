@@ -122,6 +122,18 @@ public class EC2Comm {
         }
     }
 
+    public void predict(String modelFile, String caffeModelFile, String dataFile){
+        try{
+            String command = "python net_predictor.py " + modelFile + " " + caffeModelFile + " " + dataFile + " " + userDirNoSlash;
+            session = newSession();
+            cmd = session.exec(command);
+            cmd.join(5, TimeUnit.SECONDS);
+            System.out.println("Prediction Complete");
+        } catch(IOException e){
+            e.printStackTrace();
+        }
+    }
+
     public void transferFilesToLocal(String localDir, String[] fileNames){
         try {
             for(String fileName : fileNames) {
@@ -149,9 +161,13 @@ public class EC2Comm {
 
     public int cleanUp(){
         String cleanCommand = "rm -rf " + userDirNoSlash;
+        String removeGz = "rm -f *.tar.gz";
         try {
             session = newSession();
             cmd = session.exec(cleanCommand);
+            cmd.join(1, TimeUnit.SECONDS);
+            session = newSession();
+            cmd = session.exec(removeGz);
             cmd.join(1, TimeUnit.SECONDS);
             System.out.println("Cleaned");
             return 0;
