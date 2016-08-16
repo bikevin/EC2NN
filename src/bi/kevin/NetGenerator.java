@@ -21,7 +21,7 @@ public class NetGenerator {
     //What do we care about for the network design?
     //Number of layers -> Layer object contains information about neuron type and layer size
     //See above for defining whether neural net computes classification or regression
-    public String createNet(){
+    public String createNet(Boolean predict){
 
         Layer[] layers = netLayers;
 
@@ -64,7 +64,7 @@ public class NetGenerator {
         }
 
         //build the output layers
-        currentLayer = outputLayerBuilder(layers[layers.length - 1]);
+        currentLayer = outputLayerBuilder(layers[layers.length - 1], predict);
         currentLayer[0].addBottom(parameters.get(parameters.size() - 1).getTop(0));
 
         for(Caffe.LayerParameter.Builder builder : currentLayer){
@@ -126,11 +126,19 @@ public class NetGenerator {
     }
 
     //output classification layer- MUST HAVE A NEURON TYPE
-    private Caffe.LayerParameter.Builder[] outputLayerBuilder(Layer layer){
+    private Caffe.LayerParameter.Builder[] outputLayerBuilder(Layer layer, Boolean predict){
         Caffe.LayerParameter.Builder outputLayer = Caffe.LayerParameter.newBuilder();
         String[] possibleNames = {"undef", "Sigmoid", "TanH", "ReLU", "HDF5Data"};
 
-        Caffe.LayerParameter.Builder[] outParams = new Caffe.LayerParameter.Builder[3];
+        Caffe.LayerParameter.Builder[] outParams;
+
+        if(predict){
+            outParams = new Caffe.LayerParameter.Builder[2];
+        } else {
+            outParams = new Caffe.LayerParameter.Builder[3];
+        }
+
+
 
         outputLayer.setName("innerBottom").setType("InnerProduct").setInnerProductParam(Caffe.InnerProductParameter.newBuilder()
                 .setNumOutput(layer.getNeurons()).setWeightFiller(Caffe.FillerParameter.newBuilder().setType("xavier"))).addTop("innerBottom");
@@ -138,30 +146,37 @@ public class NetGenerator {
 
         outputLayer = Caffe.LayerParameter.newBuilder();
 
-        outputLayer.setName(possibleNames[layer.getLayerType()] + "Bottom")
-                .setType(possibleNames[layer.getLayerType()]).addTop(possibleNames[layer.getLayerType()] + "Bottom")
+        outputLayer.setName("NeuronBottom")
+                .setType(possibleNames[layer.getLayerType()]).addTop("NeuronBottom")
                 .addBottom("innerBottom");
         outParams[1] = outputLayer;
 
         outputLayer = Caffe.LayerParameter.newBuilder();
-        if(layer.getNeurons() == 1){
-            outputLayer.setName("loss").setType("EuclideanLoss").addBottom("innerBottom").addBottom("label")
-                    .addTop("loss");
-            outParams[2] = outputLayer;
-        } else {
-            outputLayer.setName("loss").setType("SoftmaxWithLoss").addBottom("innerBottom").addBottom("label")
-                    .addTop("loss");
-            outParams[2] = outputLayer;
+
+        if(!predict) {
+            if (layer.getNeurons() == 1) {
+                outputLayer.setName("loss").setType("EuclideanLoss").addBottom("innerBottom").addBottom("label")
+                        .addTop("loss");
+                outParams[2] = outputLayer;
+            } else {
+                outputLayer.setName("loss").setType("SoftmaxWithLoss").addBottom("innerBottom").addBottom("label")
+                        .addTop("loss");
+                outParams[2] = outputLayer;
+            }
+            if(layer.getPhase() == 1){
+                outParams[2].addInclude(Caffe.NetStateRule.newBuilder().setPhase(Caffe.Phase.TRAIN));
+            } else if(layer.getPhase() == 2){
+                outParams[2].addInclude(Caffe.NetStateRule.newBuilder().setPhase(Caffe.Phase.TEST));
+            }
+
         }
 
         if(layer.getPhase() == 1){
             outParams[0].addInclude(Caffe.NetStateRule.newBuilder().setPhase(Caffe.Phase.TRAIN));
             outParams[1].addInclude(Caffe.NetStateRule.newBuilder().setPhase(Caffe.Phase.TRAIN));
-            outParams[2].addInclude(Caffe.NetStateRule.newBuilder().setPhase(Caffe.Phase.TRAIN));
         } else if(layer.getPhase() == 2){
             outParams[0].addInclude(Caffe.NetStateRule.newBuilder().setPhase(Caffe.Phase.TEST));
             outParams[1].addInclude(Caffe.NetStateRule.newBuilder().setPhase(Caffe.Phase.TEST));
-            outParams[2].addInclude(Caffe.NetStateRule.newBuilder().setPhase(Caffe.Phase.TEST));
         }
 
         return outParams;

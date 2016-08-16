@@ -46,7 +46,7 @@ public class Main {
         //create a NetGenerator object - only one constructor, takes array of layers
         NetGenerator netGenerator = new NetGenerator(layers, "test");
         System.out.println("Example Neural Network:");
-        System.out.println(netGenerator.createNet());
+        System.out.println(netGenerator.createNet(false));
 
         //FORMAT OF A SOLVER:
         //---------------------------------------------------------------
