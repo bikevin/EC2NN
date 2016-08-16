@@ -145,11 +145,11 @@ public class NetGenerator {
 
         outputLayer = Caffe.LayerParameter.newBuilder();
         if(layer.getNeurons() == 1){
-            outputLayer.setName("loss").setType("EuclideanLoss").addBottom(possibleNames[layer.getLayerType()] + "Bottom").addBottom("label")
+            outputLayer.setName("loss").setType("EuclideanLoss").addBottom("innerBottom").addBottom("label")
                     .addTop("loss");
             outParams[2] = outputLayer;
         } else {
-            outputLayer.setName("loss").setType("SoftmaxWithLoss").addBottom(possibleNames[layer.getLayerType()] + "Bottom").addBottom("label")
+            outputLayer.setName("loss").setType("SoftmaxWithLoss").addBottom("innerBottom").addBottom("label")
                     .addTop("loss");
             outParams[2] = outputLayer;
         }
