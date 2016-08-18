@@ -129,6 +129,8 @@ public class EC2Comm {
             String command = "python net_predictor.py " + modelFile + " " + caffeModelFile + " " + dataFile + " " + userDirNoSlash;
             session = newSession();
             cmd = session.exec(command);
+            System.out.println(IOUtils.readFully(cmd.getErrorStream()).toString());
+            System.out.println(IOUtils.readFully(cmd.getInputStream()).toString());
             cmd.join(5, TimeUnit.SECONDS);
             System.out.println("Prediction Complete");
         } catch(IOException e){
