@@ -155,11 +155,11 @@ public class NetGenerator {
 
         if(!predict) {
             if (layer.getNeurons() == 1) {
-                outputLayer.setName("loss").setType("EuclideanLoss").addBottom("innerBottom").addBottom("label")
+                outputLayer.setName("loss").setType("EuclideanLoss").addBottom("NeuronBottom").addBottom("label")
                         .addTop("loss");
                 outParams[2] = outputLayer;
             } else {
-                outputLayer.setName("loss").setType("SoftmaxWithLoss").addBottom("innerBottom").addBottom("label")
+                outputLayer.setName("loss").setType("SoftmaxWithLoss").addBottom("NeuronBottom").addBottom("label")
                         .addTop("loss");
                 outParams[2] = outputLayer;
             }
