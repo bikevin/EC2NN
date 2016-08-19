@@ -7,8 +7,8 @@ from pylab import *
 
 caffe.set_mode_cpu()
 
-if len(sys.argv) != 6 and len(sys.argv) != 7 and len(sys.argv) != 8:
-        exit("Error: Incorrect number of arguments. \nUsage: net_trainer.py <file path to solver> <iterations to train> <iterations between tests> <iterations per test> <userdir> <model file path (optional)> <solverstate file path (optional)>")
+if len(sys.argv) != 6 and len(sys.argv) != 7 and len(sys.argv) != 8 and len(sys.argv) != 9:
+        exit("Error: Incorrect number of arguments. \nUsage: net_trainer.py <file path to solver> <iterations to train> <iterations between tests> <iterations per test> <userdir> <simple> <model file path (optional)> <solverstate file path (optional)>")
 
 solverFilePath = sys.argv[5] + '/' + sys.argv[1]
 modelFilePath = ''
@@ -16,14 +16,14 @@ stateFilePath = ''
 
 if not os.path.isfile(solverFilePath):
         exit("Error: File path to solver is invalid.")
-if len(sys.argv) >= 7:
+if len(sys.argv) >= 8:
         if not os.path.isfile(modelFilePath):
                 exit("Error: File path to model file is invalid.")
-        modelFilePath = sys.argv[5] + '/' + sys.argv[6]
-        if len(sys.argv) == 8:
+        modelFilePath = sys.argv[5] + '/' + sys.argv[7]
+        if len(sys.argv) == 9:
                 if not os.path.isfile(stateFilePath):
                         exit("Error: File path to solverstate file is invalid.")
-                stateFilePath = sys.argv[5] + '/' + sys.argv[7]
+                stateFilePath = sys.argv[5] + '/' + sys.argv[8]
 
 try:
 	int(sys.argv[2])
@@ -35,12 +35,15 @@ except ValueError:
 if int(sys.argv[3]) == 0:
 	exit("Error: Iterations between tests must be greater than zero")
 
-solver = caffe.SGDSolver(solverFilePath)
+if sys.argv[6] == 'true':
+	solver = caffe.AdaDeltaSolver(solverFilePath)
+else:
+	solver = caffe.SGDSolver(solverFilePath)
 
-if len(sys.argv) == 7:
+if len(sys.argv) == 8:
         solver.net.copy_from(modelFilePath)
         solver.test_nets[0].copy_from(modelFilePath)
-if len(sys.argv) == 7:
+if len(sys.argv) == 9:
         solver.restore(stateFilePath)
         solver.test_nets[0].restore(stateFilePath)
 
