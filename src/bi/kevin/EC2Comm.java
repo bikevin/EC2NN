@@ -68,10 +68,18 @@ public class EC2Comm {
 
     }
 
-    public String[] trainNet(String solverFilePath, int trainIters, int testInterval, int testIters, String[] optional){
+    public String[] trainNet(String solverFilePath, int trainIters, int testInterval, int testIters, Boolean simple, String[] optional){
+
+        String simpleString;
+
+        if(simple){
+            simpleString = "true";
+        } else {
+            simpleString = "false";
+        }
 
         String shellCommand = "python net_trainer.py " + solverFilePath + " " + String.valueOf(trainIters)
-                + " " + String.valueOf(testInterval) + " " + String.valueOf(testIters) + " " + userDirNoSlash;
+                + " " + String.valueOf(testInterval) + " " + String.valueOf(testIters) + " " + userDirNoSlash + " " + simpleString;
         for(String string : optional){
             shellCommand += " " + string;
         }

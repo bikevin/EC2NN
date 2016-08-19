@@ -10,7 +10,7 @@ public class SolverGenerator {
     private float gamma = 0.01f;
     private float power = 0.75f;
     private float momentum = 0.9f;
-    private float weight_decay = 0.005f;
+    private float weight_decay = 0.0001f;
     private float base_lr = 0.01f;
     private int test_iter = 1;
     private int test_inter = 1000000;
@@ -40,6 +40,17 @@ public class SolverGenerator {
         solver.setTrainNet(train_net).addTestNet(test_net)
                 .setSnapshot(snapshot).setLrPolicy(lr_policy).setSnapshotPrefix(snapshot_prefix).setGamma(gamma)
                 .setPower(power).setMomentum(momentum).setWeightDecay(weight_decay).setBaseLr(base_lr).addTestIter(test_iter).setTestInterval(test_inter);
+
+        return TextFormat.printToString(solver);
+    }
+
+    public String createSimpleSolver(){
+
+        Caffe.SolverParameter.Builder solver = Caffe.SolverParameter.newBuilder();
+
+        solver.setTrainNet(train_net).addTestNet(test_net)
+                .setSnapshot(snapshot).setLrPolicy("fixed").setSnapshotPrefix(snapshot_prefix).setMomentum(momentum)
+                .setWeightDecay(weight_decay).setBaseLr(1.0f).addTestIter(test_iter).setTestInterval(test_inter);
 
         return TextFormat.printToString(solver);
     }
