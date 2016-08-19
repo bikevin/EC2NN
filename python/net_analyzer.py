@@ -1,7 +1,8 @@
+import sys
+sys.path.append('/home/ubuntu/caffe-master/python')
 import caffe
 import matplotlib.pyplot as plt
 import numpy as np
-import sys
 import h5py
 import os
 
@@ -35,7 +36,7 @@ reference = np.zeros((1, refNet.blobs['data'].data.shape[1]))
 refNet.blobs['data'].data[...] = reference
 #double check this starting point
 #refNet.forward(start='Inner1')
-refNet.forward(start='inner1')
+refNet.forward(start='inner2')
 
 for layer in net.layers:
 	print layer.type
@@ -58,13 +59,13 @@ for k in range(data.get('data').shape[0]):
 			continue
 	currentValues = []
 	#populate currentValues
-	for value in multipliers[multipliers.shape[0] - 1]:
+	for value in multipliers[multipliers.__len__() - 1]:
 		currentValues.append(value[0])
 	for i in range(layerTypes.__len__()):
 		#have to go backwards in multiplier tuple
-		pos = multipliers.shape[0] - i
+		pos = multipliers.__len__() - i - 1
 		newVals = []
-		for j in range(multipliers[pos].shape[1]):
+		for j in range(multipliers[pos].shape[0]):
 			if layerTypes[pos] == "InnerProduct":
 				temp = 0
 				for l in range(multipliers[pos].shape[0]):
