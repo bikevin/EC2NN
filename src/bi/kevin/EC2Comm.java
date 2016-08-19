@@ -124,6 +124,20 @@ public class EC2Comm {
         }
     }
 
+    public void analyzeNet(String modelFile, String caffeModelFile, String dataFile, String analyzeList){
+        try {
+            String command = "python net_analyzer.py " + modelFile + " " + caffeModelFile + " " + dataFile + " " + userDirNoSlash + " " + analyzeList;
+            session = newSession();
+            cmd = session.exec(command);
+            System.out.println(IOUtils.readFully(cmd.getErrorStream()).toString());
+            System.out.println(IOUtils.readFully(cmd.getInputStream()).toString());
+            cmd.join(5, TimeUnit.SECONDS);
+            System.out.println("Analysis Complete");
+        } catch(IOException e){
+            e.printStackTrace();
+        }
+    }
+
     public void predict(String modelFile, String caffeModelFile, String dataFile){
         try{
             String command = "python net_predictor.py " + modelFile + " " + caffeModelFile + " " + dataFile + " " + userDirNoSlash;
