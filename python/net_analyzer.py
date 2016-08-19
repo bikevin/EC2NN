@@ -5,11 +5,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import h5py
 import os
+import csv
 
 caffe.set_mode_cpu()
 
-if len(sys.argv) != 5:
-	exit("Error: Incorrect number of arguments. \nUsage: net_analyzer.py <file path to model prototxt> <file path to .caffemodel file> <filepath to testing data> <userdir>")
+if len(sys.argv) != 5 and len(sys.argv) != 6:
+	exit("Error: Incorrect number of arguments. \nUsage: net_analyzer.py <file path to model prototxt> <file path to .caffemodel file> <filepath to testing data> <userdir> <list of individual points to analyze>")
 
 if not os.path.exists(sys.argv[4]):
     exit("Error: Invalid userdir")
@@ -24,6 +25,15 @@ if not os.path.isfile(modelFilePath):
 	exit("Error: File path to .caffemodel file is invalid.")
 if not os.path.isfile(testFilePath):
 	exit("Error: File path to testing data is invalid.")
+
+points = []
+
+if len(sys.argv) == 6:
+	points = sys.argv[5].split(',')
+	try:
+		points = [int(i) for i in points]
+	except ValueError:
+		print 'non-int value in list of points'
 
 data = h5py.File(testFilePath, 'r')
 
@@ -44,6 +54,9 @@ refNet.forward(start='inner2')
 #	print name
 
 finalValues = [1] * data.get('data').shape[1]
+
+pointOutArray = []
+
 for k in range(data.get('data').shape[0]):
 	net.forward()
 	multipliers = ()
@@ -80,11 +93,15 @@ for k in range(data.get('data').shape[0]):
 	for i in range(deltaInput.shape[1]):
 		currentValues[i] *= deltaInput[0][i]
 		finalValues[i] += currentValues[i]
+	if k + 1 in points:
+		pointOutArray.append(currentValues)
 	
 #plt.bar(range(currentValues.__len__()), currentValues)
 #plt.savefig(sys.argv[4] + '/images/importance.png')
 #plt.close()
 
-np.savetxt(sys.argv[4] + '/importance.out', currentValues, delimiter=',')
+
+np.savetxt(sys.argv[4] + '/importance.out', finalValues, delimiter=',')
+np.savetxt(sys.argv[4] + '/individualImportance.out', pointOutArray, delimiter=',')
 
 print "Analysis Complete"
