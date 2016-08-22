@@ -20,6 +20,17 @@ public class SolverGenerator {
         this.test_net = test_net;
     }
 
+    public SolverGenerator(String train_net, String test_net, int snapshot, float momentum, float weight_decay, String userDir){
+        this.test_net = userDir + "/" + test_net;
+        this.train_net = userDir + "/" + train_net;
+        this.snapshot = snapshot;
+        this.momentum = momentum;
+        this.weight_decay = weight_decay;
+        this.snapshot_prefix = userDir + this.snapshot_prefix;
+
+
+    }
+
     public SolverGenerator(String train_net, String test_net, int snapshot,
                            float gamma, float power, float momentum, float weight_decay, float base_lr, String userDir){
         this.test_net = userDir + "/" + test_net;
