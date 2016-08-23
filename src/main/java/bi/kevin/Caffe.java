@@ -36854,7 +36854,7 @@ public final class Caffe {
          * predicted label -- may be negative to index from the end (e.g., -1 for the
          * last axis).  For example, if axis == 1 and the predictions are
          * (N x C x H x W), the label blob is expected to contain N*H*W ground truth
-         * labels with integer values in {0, 1, ..., C-1}.
+         * labelIndicies with integer values in {0, 1, ..., C-1}.
          * </pre>
          *
          * <code>optional int32 axis = 2 [default = 1];</code>
@@ -36866,7 +36866,7 @@ public final class Caffe {
          * predicted label -- may be negative to index from the end (e.g., -1 for the
          * last axis).  For example, if axis == 1 and the predictions are
          * (N x C x H x W), the label blob is expected to contain N*H*W ground truth
-         * labels with integer values in {0, 1, ..., C-1}.
+         * labelIndicies with integer values in {0, 1, ..., C-1}.
          * </pre>
          *
          * <code>optional int32 axis = 2 [default = 1];</code>
@@ -37010,7 +37010,7 @@ public final class Caffe {
          * predicted label -- may be negative to index from the end (e.g., -1 for the
          * last axis).  For example, if axis == 1 and the predictions are
          * (N x C x H x W), the label blob is expected to contain N*H*W ground truth
-         * labels with integer values in {0, 1, ..., C-1}.
+         * labelIndicies with integer values in {0, 1, ..., C-1}.
          * </pre>
          *
          * <code>optional int32 axis = 2 [default = 1];</code>
@@ -37024,7 +37024,7 @@ public final class Caffe {
          * predicted label -- may be negative to index from the end (e.g., -1 for the
          * last axis).  For example, if axis == 1 and the predictions are
          * (N x C x H x W), the label blob is expected to contain N*H*W ground truth
-         * labels with integer values in {0, 1, ..., C-1}.
+         * labelIndicies with integer values in {0, 1, ..., C-1}.
          * </pre>
          *
          * <code>optional int32 axis = 2 [default = 1];</code>
@@ -37453,7 +37453,7 @@ public final class Caffe {
              * predicted label -- may be negative to index from the end (e.g., -1 for the
              * last axis).  For example, if axis == 1 and the predictions are
              * (N x C x H x W), the label blob is expected to contain N*H*W ground truth
-             * labels with integer values in {0, 1, ..., C-1}.
+             * labelIndicies with integer values in {0, 1, ..., C-1}.
              * </pre>
              *
              * <code>optional int32 axis = 2 [default = 1];</code>
@@ -37467,7 +37467,7 @@ public final class Caffe {
              * predicted label -- may be negative to index from the end (e.g., -1 for the
              * last axis).  For example, if axis == 1 and the predictions are
              * (N x C x H x W), the label blob is expected to contain N*H*W ground truth
-             * labels with integer values in {0, 1, ..., C-1}.
+             * labelIndicies with integer values in {0, 1, ..., C-1}.
              * </pre>
              *
              * <code>optional int32 axis = 2 [default = 1];</code>
@@ -37481,7 +37481,7 @@ public final class Caffe {
              * predicted label -- may be negative to index from the end (e.g., -1 for the
              * last axis).  For example, if axis == 1 and the predictions are
              * (N x C x H x W), the label blob is expected to contain N*H*W ground truth
-             * labels with integer values in {0, 1, ..., C-1}.
+             * labelIndicies with integer values in {0, 1, ..., C-1}.
              * </pre>
              *
              * <code>optional int32 axis = 2 [default = 1];</code>
@@ -37498,7 +37498,7 @@ public final class Caffe {
              * predicted label -- may be negative to index from the end (e.g., -1 for the
              * last axis).  For example, if axis == 1 and the predictions are
              * (N x C x H x W), the label blob is expected to contain N*H*W ground truth
-             * labels with integer values in {0, 1, ..., C-1}.
+             * labelIndicies with integer values in {0, 1, ..., C-1}.
              * </pre>
              *
              * <code>optional int32 axis = 2 [default = 1];</code>

@@ -34,7 +34,7 @@ public class Main {
 
         //testing data layer - layer type 4 (HDF5Data), neurons ignored,
         //data location is "test_files", testing phase, batch size of 100
-        layers[1] = new Layer(4, 0, "testing_files", 1, 100);
+        layers[1] = new Layer(4, 0, "testing_files", 2, 100);
 
         //hidden layer - layer type 2 (TanH), 35 neurons
         layers[2] = new Layer(2, 35);
