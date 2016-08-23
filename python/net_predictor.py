@@ -7,8 +7,8 @@ from pylab import *
 
 caffe.set_mode_cpu()
 
-if len(sys.argv) != 5:
-        exit("Error: Incorrect number of arguments. \nUsage: net_predictor.py <$")
+if len(sys.argv) != 4:
+        exit("Error: Incorrect number of arguments. \nUsage: net_predictor.py <path to model file> <path to caffemodel file> <userdir>")
 
 if not os.path.exists(sys.argv[4]):
         exit("Error: Invalid userdir")
