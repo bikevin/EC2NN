@@ -15,12 +15,24 @@
             </plugin>
         </plugins>
     </build>
+    <dependencies>
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java-util</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.hierynomus</groupId>
+            <artifactId>sshj</artifactId>
+            <version>0.17.2</version>
+        </dependency>
+    </dependencies>
 
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>groupId</groupId>
     <artifactId>EC2NN</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
 
 
 </project>

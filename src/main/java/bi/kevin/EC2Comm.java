@@ -146,9 +146,9 @@ public class EC2Comm {
         }
     }
 
-    public void predict(String modelFile, String caffeModelFile, String dataFile){
+    public void predict(String modelFile, String caffeModelFile){
         try{
-            String command = "python net_predictor.py " + modelFile + " " + caffeModelFile + " " + dataFile + " " + userDirNoSlash;
+            String command = "python net_predictor.py " + modelFile + " " + caffeModelFile + " " + userDirNoSlash;
             session = newSession();
             cmd = session.exec(command);
             System.out.println(IOUtils.readFully(cmd.getErrorStream()).toString());
