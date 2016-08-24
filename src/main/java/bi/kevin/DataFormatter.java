@@ -20,18 +20,17 @@ public class DataFormatter{
 
     public DataFormatter(int[] labelIndicies, Collection<? extends Collection<Double>> collection) throws Exception {
 
+        //allow empty labels - if empty, create a labelless collection
+
         if(collection.size() < 1 || collection.iterator().next().size() < 1){
             throw new Exception("Size of all collections must be greater than 0.");
-        } else if (labelIndicies.length < 1){
-            throw new Exception("Need at least one label index.");
-        } else {
+        } else if (labelIndicies.length > 0){
             for(int index : labelIndicies){
                 if(index < 0 || index >= collection.iterator().next().size()){
                     throw new Exception("Label indicies not contained in the dataset");
                 }
             }
         }
-
 
         this.labelIndicies = labelIndicies;
         this.collection = collection;

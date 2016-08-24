@@ -1,29 +1,36 @@
 package bi.kevin;
 
-import org.bytedeco.javacv.CanvasFrame;
+import org.deeplearning4j.eval.Evaluation;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
 import org.deeplearning4j.nn.conf.Updater;
 import org.deeplearning4j.nn.conf.layers.DenseLayer;
 import org.deeplearning4j.nn.conf.layers.OutputLayer;
+import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.nn.weights.WeightInit;
+import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
+import org.nd4j.linalg.dataset.SplitTestAndTrain;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
+
+import java.util.ArrayList;
 
 /**
  * Created by Kevin on 8/23/2016.
  */
 public class LocalNetwork {
 
-    private DataSet dataSet;
-    private double testTrainSplit;
+    private DataSet testData;
+    private DataSet trainData;
     private int iterations, numInputs, numOutputs;
     private Layer[] layerArray;
     private boolean isClassification;
+    private MultiLayerNetwork trainedModel;
 
     public LocalNetwork(DataSet dataSet, double testTrainSplit, int iterations, Layer[] layerArray, boolean isClassification){
-        this.dataSet = dataSet;
-        this.testTrainSplit = testTrainSplit;
+        SplitTestAndTrain testAndTrain = dataSet.splitTestAndTrain(testTrainSplit);
+        testData = testAndTrain.getTest();
+        trainData = testAndTrain.getTrain();
         this.iterations = iterations;
         this.layerArray = layerArray;
         numInputs = dataSet.numInputs();
@@ -95,5 +102,30 @@ public class LocalNetwork {
         }
 
         return conf.pretrain(false).backprop(true).build();
+    }
+
+    public ArrayList<ModelInfo> trainModel(int printIterations) throws Exception{
+        ArrayList<ModelInfo> diagInfo = new ArrayList<>();
+
+        trainedModel = new MultiLayerNetwork(buildNet());
+        trainedModel.init();
+        trainedModel.setListeners(new CustomListener(trainData, testData, printIterations, diagInfo));
+
+        trainedModel.fit(trainData);
+
+        return diagInfo;
+    }
+
+    public Evaluation getEval(){
+
+        Evaluation eval = new Evaluation(numOutputs);
+        INDArray output = trainedModel.output(testData.getFeatureMatrix());
+        eval.eval(testData.getLabels(), output);
+
+        return eval;
+    }
+
+    public MultiLayerNetwork getTrainedModel(){
+        return trainedModel;
     }
 }
