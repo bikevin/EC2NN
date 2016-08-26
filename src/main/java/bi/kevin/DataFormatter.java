@@ -67,7 +67,8 @@ public class DataFormatter{
         INDArray label = Nd4j.create(labelIndicies.length);
         INDArray features = Nd4j.create(record.size() - labelIndicies.length);
 
-        int count = 0;
+        int featureCount = 0;
+        int labelCount = 0;
         for(int i = 0; i < currentList.size(); i++){
             boolean isLabel = false;
             for(int index : labelIndicies){
@@ -77,9 +78,9 @@ public class DataFormatter{
             }
 
             if(isLabel){
-                label.putScalar(count++, currentList.get(i));
+                label.putScalar(labelCount++, currentList.get(i));
             } else {
-                features.putScalar(count++, currentList.get(i));
+                features.putScalar(featureCount++, currentList.get(i));
             }
         }
 

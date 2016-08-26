@@ -57,30 +57,27 @@ public class LocalNetwork {
                 .iterations(iterations)
                 .weightInit(WeightInit.XAVIER)
                 .regularization(true).l2(1e-4)
-                .updater(Updater.ADADELTA)
-                .momentum(0.9).rho(0.95)
+                .updater(Updater.ADADELTA).rho(0.95)
                 .list();
 
         int layerCount = 0;
 
-        int prevSize = 0, nextSize = 0;
+        int prevSize = 0;
 
         for(int i = 1; i < layerArray.length - 1; i++){
 
             Layer prevLayer = layerArray[i - 1];
             Layer currentLayer = layerArray[i];
-            Layer nextLayer = layerArray[i + 1];
 
             if(currentLayer.getPhase() != 2 && currentLayer.getLayerType() != 4){
 
                 prevSize = prevLayer.getNeurons();
-                nextSize = nextLayer.getNeurons();
 
                 if(prevLayer.getLayerType() == 4){
                     prevSize = numInputs;
                 }
 
-                DenseLayer tempLayer = new DenseLayer.Builder().nIn(prevSize).nOut(nextSize)
+                DenseLayer tempLayer = new DenseLayer.Builder().nIn(prevSize).nOut(currentLayer.getNeurons())
                         .activation(getActivation(currentLayer)).build();
 
                 conf.layer(layerCount++, tempLayer);
@@ -106,6 +103,8 @@ public class LocalNetwork {
 
     public ArrayList<ModelInfo> trainModel(int printIterations) throws Exception{
         ArrayList<ModelInfo> diagInfo = new ArrayList<>();
+
+        System.out.println(buildNet());
 
         trainedModel = new MultiLayerNetwork(buildNet());
         trainedModel.init();

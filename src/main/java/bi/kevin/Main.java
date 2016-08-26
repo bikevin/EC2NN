@@ -1,5 +1,13 @@
 package bi.kevin;
 
+import org.nd4j.linalg.dataset.DataSet;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.Collection;
+
 public class Main {
 
 
@@ -41,7 +49,7 @@ public class Main {
 
         //output layer - layer type 2 (TanH), 1 neuron (for regression, more
         //for classification)
-        layers[3] = new Layer(2, 1);
+        layers[3] = new Layer(2, 2);
 
         //create a NetGenerator object - only one constructor, takes array of layers
         NetGenerator netGenerator = new NetGenerator(layers, "test");
@@ -96,25 +104,79 @@ public class Main {
         //EXAMPLE STUFF - TO USE, UNCOMMENT AND REPLACE FILE PATHS WITH YOUR OWN
         //sends a file to server and deletes it
 //
-        EC2Comm ec2Comm = new EC2Comm("ec2-54-152-208-18.compute-1.amazonaws.com", "/home/kevin/Downloads/neuralnetwork.pem", "test");
+//        EC2Comm ec2Comm = new EC2Comm("ec2-54-152-208-18.compute-1.amazonaws.com", "/home/kevin/Downloads/neuralnetwork.pem", "test");
 //        ec2Comm.trainNet("solver", 100, 50, 3, new String[0]);
-        String[] filePaths = {"/home/kevin/Documents/NN/beets/beet_net.prototxt",
+/*        String[] filePaths = {"/home/kevin/Documents/NN/beets/beet_net.prototxt",
                 "/home/kevin/Documents/NN/beets/beet_solver.prototxt",
                 "/home/kevin/Documents/NN/beets/training_files",
                 "/home/kevin/Documents/NN/beets/testing_files",
                 "/home/kevin/Documents/NN/beets/train.h5",
-                "/home/kevin/Documents/NN/beets/validate.h5"};
+                "/home/kevin/Documents/NN/beets/validate.h5"};*/
 
  //       ec2Comm.transferFilesToServer(filePaths, "");
  //       ec2Comm.trainNet("beet_solver.prototxt", 100, 50, 3, new String[0]);
 //        ec2Comm.drawNet("beet_net.prototxt", "image.png");
-        ec2Comm.transferOutputsToLocal("/home/kevin/Documents");
+ //       ec2Comm.transferOutputsToLocal("/home/kevin/Documents");
 //        ec2Comm.cleanUp();
+
+
+        try{
+            Collection<? extends Collection<Double> > testData = Test.getResult();
+
+            int[] labelIndicies = {3, 4};
+
+            DataFormatter dataFormatter = new DataFormatter(labelIndicies, testData);
+
+            LocalNetwork localNetwork = new LocalNetwork(dataFormatter.getAllDataNormalized(), 0.65, 100, layers, true);
+            ArrayList<ModelInfo> netOutput = localNetwork.trainModel(10);
+
+            for(ModelInfo info : netOutput){
+                System.out.println(info.getIteration());
+                System.out.println(info.getTestScore());
+                System.out.println(info.getTrainScore());
+            }
+
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+
 
     }
 
 
 }
+
+
+class Test {
+    private static final String pathToExpandedColumns = "C:\\Users\\Kevin\\Downloads\\expanded.txt";
+
+    public static Collection< ? extends Collection< Double > > getResult() throws Exception{
+
+        Collection< Collection< Double > > result = new ArrayList();
+
+        try( BufferedReader br = new BufferedReader( new FileReader( new File( pathToExpandedColumns ) ) ) ){
+            String line;
+
+            //iterate through lines in the input file
+            while( (line=br.readLine()) != null ){
+
+                //skip empty lines and lines that don't start with tabs
+                if( line.trim().isEmpty() || !line.startsWith( "\t" ) )
+                    continue;
+
+                //parse floats
+                Collection< Double > resultRow = new ArrayList();
+                String[] parts = line.trim().split( "\t" );
+                for( String s : parts )
+                    resultRow.add( Double.parseDouble( s ) );
+                result.add( resultRow );
+            }
+        }
+
+        return result;
+    }
+}
+
 
 
 
