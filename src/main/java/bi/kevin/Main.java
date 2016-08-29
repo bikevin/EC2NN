@@ -1,6 +1,9 @@
 package bi.kevin;
 
-import org.nd4j.linalg.dataset.DataSet;
+import org.deeplearning4j.eval.Evaluation;
+import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
+import org.deeplearning4j.util.ModelSerializer;
+import org.nd4j.linalg.factory.Nd4j;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -121,6 +124,9 @@ public class Main {
 
 
         try{
+
+            Nd4j.ENFORCE_NUMERICAL_STABILITY = true;
+
             Collection<? extends Collection<Double> > testData = Test.getResult();
 
             int[] labelIndicies = {3, 4};
@@ -128,13 +134,30 @@ public class Main {
             DataFormatter dataFormatter = new DataFormatter(labelIndicies, testData);
 
             LocalNetwork localNetwork = new LocalNetwork(dataFormatter.getAllDataNormalized(), 0.65, 100, layers, true);
-            ArrayList<ModelInfo> netOutput = localNetwork.trainModel(10);
+            ArrayList<ModelInfo> netOutput = localNetwork.trainModel(new CustomListener(
+                    localNetwork.getTrainData(),
+                    localNetwork.getTestData(),
+                    10,
+                    new ArrayList<>()));
 
             for(ModelInfo info : netOutput){
                 System.out.println(info.getIteration());
                 System.out.println(info.getTestScore());
                 System.out.println(info.getTrainScore());
             }
+
+            Evaluation eval = localNetwork.getEval();
+
+            System.out.println(eval.accuracy());
+
+            MultiLayerNetwork network = localNetwork.getTrainedModel();
+
+            String json = localNetwork.toJson();
+
+            LocalNetwork newNet = new LocalNetwork(dataFormatter.getAllDataNormalized(), 0.65, json);
+            MultiLayerNetwork newNetwork = newNet.getTrainedModel();
+
+            String newJson = newNet.toJson();
 
         } catch(Exception e){
             e.printStackTrace();
