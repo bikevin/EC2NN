@@ -3,6 +3,7 @@ package bi.kevin;
 import org.deeplearning4j.eval.Evaluation;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.util.ModelSerializer;
+import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 
 import java.io.BufferedReader;
@@ -157,7 +158,12 @@ public class Main {
             LocalNetwork newNet = new LocalNetwork(dataFormatter.getAllDataNormalized(), 0.65, json);
             MultiLayerNetwork newNetwork = newNet.getTrainedModel();
 
+            INDArray params = network.getLayer(1).getParam("W");
             String newJson = newNet.toJson();
+
+            ArrayList<INDArray> importances = localNetwork.getTrainImportance();
+
+            importances = localNetwork.getTestImportance();
 
         } catch(Exception e){
             e.printStackTrace();

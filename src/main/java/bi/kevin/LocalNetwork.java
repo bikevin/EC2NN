@@ -8,9 +8,11 @@ import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
 import org.deeplearning4j.nn.conf.Updater;
 import org.deeplearning4j.nn.conf.layers.DenseLayer;
 import org.deeplearning4j.nn.conf.layers.OutputLayer;
+import org.deeplearning4j.nn.layers.BaseLayer;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.nn.weights.WeightInit;
 import org.deeplearning4j.optimize.api.IterationListener;
+import org.nd4j.linalg.api.buffer.DataBuffer;
 import org.nd4j.linalg.api.buffer.DoubleBuffer;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.cpu.nativecpu.NDArray;
@@ -58,6 +60,9 @@ public class LocalNetwork {
         ModelState modelState = gson.fromJson(json, ModelState.class);
 
         trainedModel = new MultiLayerNetwork(modelState.getConf().toJson(), new NDArray(new DoubleBuffer(modelState.getParams())));
+
+        numInputs = trainedModel.getLayer(0).getParam("W").rows();
+        numOutputs = trainedModel.getLayer(trainedModel.getLayers().length - 1).getParam("W").columns();
     }
 
     private String getActivation(Layer layer) throws Exception{
@@ -155,7 +160,85 @@ public class LocalNetwork {
         return trainData;
     }
 
-    public void getImportance(){
+    public ArrayList< INDArray > getTrainImportance(){
+
+        ArrayList<INDArray> weights = getNetworkWeights();
+
+        ArrayList< INDArray > importances = new ArrayList<>();
+
+        for(int i = 0; i < trainData.numExamples(); i++){
+            importances.add(getDatumImportance(weights, trainData.get(i).getFeatures()));
+        }
+
+        return importances;
+    }
+
+    public ArrayList< INDArray > getTestImportance(){
+        ArrayList<INDArray> weights = getNetworkWeights();
+
+        ArrayList< INDArray > importances = new ArrayList<>();
+
+        for(int i = 0; i < trainData.numExamples(); i++){
+            importances.add(getDatumImportance(weights, testData.get(i).getFeatures()));
+        }
+
+        return importances;
+    }
+
+    public ArrayList< INDArray > getImportance(DataSet data){
+        ArrayList<INDArray> weights = getNetworkWeights();
+
+        ArrayList< INDArray > importances = new ArrayList<>();
+
+        for(int i = 0; i < trainData.numExamples(); i++){
+            importances.add(getDatumImportance(weights, data.get(i).getFeatures()));
+        }
+
+        return importances;
+    }
+
+    private INDArray getDatumImportance(ArrayList<INDArray> weights, INDArray datum){
+        ArrayList<INDArray> activations = new ArrayList<>();
+
+        INDArray output = trainedModel.output(datum);
+
+        org.deeplearning4j.nn.api.Layer[] layers = trainedModel.getLayers();
+
+        for(org.deeplearning4j.nn.api.Layer layer : layers){
+            activations.add(((BaseLayer) layer).getInput());
+        }
+
+        activations.add(output);
+
+        ArrayList<INDArray> refActivations = getRefActivations();
+
+        ArrayList<INDArray> deltaActivations = new ArrayList<>();
+
+        for(int i = 0; i < refActivations.size(); i++){
+            deltaActivations.add(activations.get(i).sub(refActivations.get(i)));
+        }
+
+        INDArray currentValues = deltaActivations.get(deltaActivations.size() - 1);
+
+        currentValues = currentValues.repeat(0, new int[]{weights.get(weights.size() - 1).rows()});
+        currentValues.muli(weights.get(weights.size() - 1));
+
+        for(int i = deltaActivations.size() - 2; i > 0; i--){
+
+            INDArray deltaActRep = deltaActivations.get(i).repeat(1, new int[]{currentValues.columns()});
+            currentValues.muli(deltaActRep);
+
+            currentValues = weights.get(i - 1).mmul(currentValues);
+
+        }
+
+        INDArray deltaActRep = deltaActivations.get(0).repeat(1, new int[]{currentValues.columns()});
+        currentValues.muli(deltaActRep);
+
+        return currentValues;
+    }
+
+    private ArrayList<INDArray> getNetworkWeights(){
 
         ArrayList<INDArray> weights = new ArrayList<>();
 
@@ -163,10 +246,29 @@ public class LocalNetwork {
             weights.add(layer.getParam("W"));
         }
 
-        for(int i = 0; i < trainData.numExamples(); i++){
-            trainedModel.output(trainData.get(i).getFeatures());
+        return weights;
+    }
+
+    private ArrayList<INDArray> getRefActivations(){
+        ArrayList<INDArray> activations = new ArrayList<>();
+
+        double[] ref = new double[numInputs];
+
+        for(int i = 0; i < numInputs; i++){
+            ref[i] = 0;
         }
 
+        INDArray output = trainedModel.output(new NDArray(new DoubleBuffer(ref)));
+
+        org.deeplearning4j.nn.api.Layer[] layers = trainedModel.getLayers();
+
+        for(org.deeplearning4j.nn.api.Layer layer : layers){
+            activations.add(((BaseLayer) layer).getInput());
+        }
+
+        activations.add(output);
+
+        return activations;
     }
 
     public String toJson(){
