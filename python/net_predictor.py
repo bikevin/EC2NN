@@ -10,11 +10,11 @@ caffe.set_mode_cpu()
 if len(sys.argv) != 4:
         exit("Error: Incorrect number of arguments. \nUsage: net_predictor.py <path to model file> <path to caffemodel file> <userdir>")
 
-if not os.path.exists(sys.argv[4]):
+if not os.path.exists(sys.argv[3]):
         exit("Error: Invalid userdir")
 
-netFilePath = sys.argv[4] + '/' + sys.argv[1]
-modelFilePath = sys.argv[4] + '/' + sys.argv[2]
+netFilePath = sys.argv[3] + '/' + sys.argv[1]
+modelFilePath = sys.argv[3] + '/' + sys.argv[2]
 
 if not os.path.isfile(netFilePath):
         exit("Error: File path to net prototxt is invalid.")
