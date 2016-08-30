@@ -53,7 +53,7 @@ refNet.forward(start='inner2')
 #for name in net._layer_names:
 #	print name
 
-finalValues = [1] * data.get('data').shape[1]
+finalValues = [0] * data.get('data').shape[1]
 
 pointOutArray = []
 
@@ -61,6 +61,8 @@ for k in range(data.get('data').shape[0]):
 	net.forward()
 	multipliers = ()
 	layerTypes = []
+	multipliers += (net.blobs['data'].data - refNet.blobs['data'].data,)
+	layerTypes.append('Input')
 	for i in range(net.layers.__len__()):
 		layerType = net.layers[i].type
 		if layerType == "InnerProduct":
@@ -71,27 +73,21 @@ for k in range(data.get('data').shape[0]):
 			layerTypes.append("Nonlinearity")
 		else:
 			continue
+	
 	currentValues = []
 	#populate currentValues
-	for value in multipliers[multipliers.__len__() - 1]:
-		currentValues = value
-	for i in range(layerTypes.__len__()):
-		#have to go backwards in multiplier tuple
-		pos = multipliers.__len__() - i - 1
-		newVals = []
-		for j in range(multipliers[pos].shape[1]):
-			if layerTypes[pos] == "InnerProduct":
-				temp = 0
-				for l in range(multipliers[pos].shape[0]):
-					temp += multipliers[pos][l][j] * currentValues[l]
-				newVals.append(temp)
-			else:
-				newVals.append(currentValues[j] * multipliers[pos][0][j])
-		currentValues = newVals
-
-	deltaInput = net.blobs['data'].data - refNet.blobs['data'].data
-	for i in range(deltaInput.shape[1]):
-		currentValues[i] *= deltaInput[0][i]
+	currentValues = np.asarray(multipliers[multipliers.__len__() - 1])
+	for i in range(layerTypes.__len__() - 1):
+		pos = multipliers.__len__() - i - 2
+		workingValue = np.transpose(np.asarray(multipliers[pos]))
+		if currentValues.shape[0] == workingValue.shape[0]:
+			print workingValue.shape
+			print currentValues.shape
+			currentValues = np.tile(currentValues, (1, workingValue.shape[1]))
+			currentValues = np.multiply(currentValues, workingValue)
+		if currentValues.shape[0] == workingValue.shape[1]:
+			currentValues = np.dot(workingValue, currentValues)
+	for i in range(finalValues.__len__()):
 		finalValues[i] += currentValues[i]
 	if k + 1 in points:
 		pointOutArray.append(currentValues)
