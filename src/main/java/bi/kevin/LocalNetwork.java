@@ -178,7 +178,7 @@ public class LocalNetwork {
 
         ArrayList< INDArray > importances = new ArrayList<>();
 
-        for(int i = 0; i < trainData.numExamples(); i++){
+        for(int i = 0; i < testData.numExamples(); i++){
             importances.add(getDatumImportance(weights, testData.get(i).getFeatures()));
         }
 

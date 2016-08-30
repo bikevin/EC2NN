@@ -55,7 +55,7 @@ public class NetGenerator {
         //build the hidden layers
         Caffe.LayerParameter.Builder[] currentLayer;
         for(int i = dataLayerCount; i < layers.length - 1; i++){
-            currentLayer = hiddenLayerBuilder(layers[i], i);
+            currentLayer = hiddenLayerBuilder(layers[i], i - dataLayerCount + 1);
             currentLayer[0].addBottom(parameters.get(parameters.size() - 1).getTop(0));
 
             for(Caffe.LayerParameter.Builder builder : currentLayer){

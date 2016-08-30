@@ -59,6 +59,7 @@ public class Main {
         NetGenerator netGenerator = new NetGenerator(layers, "test");
         System.out.println("Example Neural Network:");
         System.out.println(netGenerator.createNet(false));
+        System.out.println(netGenerator.createNet(true));
 
         //FORMAT OF A SOLVER:
         //---------------------------------------------------------------
