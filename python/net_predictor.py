@@ -26,5 +26,5 @@ net.forward()
 
 #make sure the predict network doesn't have a loss layer, but there's no real c$
 
-np.savetxt(sys.argv[4] + '/predict.out', [net.blobs[net._blob_names[-1]].data], delimiter=',')
+np.savetxt(sys.argv[3] + '/predict.out', [net.blobs[net._blob_names[-1]].data], delimiter=',')
 
