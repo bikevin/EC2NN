@@ -46,7 +46,7 @@ reference = np.zeros((1, refNet.blobs['data'].data.shape[1]))
 refNet.blobs['data'].data[...] = reference
 #double check this starting point
 #refNet.forward(start='Inner1')
-refNet.forward(start='inner2')
+refNet.forward(start='inner1')
 
 #for layer in net.layers:
 #	print layer.type
@@ -81,8 +81,6 @@ for k in range(data.get('data').shape[0]):
 		pos = multipliers.__len__() - i - 2
 		workingValue = np.transpose(np.asarray(multipliers[pos]))
 		if currentValues.shape[0] == workingValue.shape[0]:
-			print workingValue.shape
-			print currentValues.shape
 			currentValues = np.tile(currentValues, (1, workingValue.shape[1]))
 			currentValues = np.multiply(currentValues, workingValue)
 		if currentValues.shape[0] == workingValue.shape[1]:
@@ -96,6 +94,11 @@ for k in range(data.get('data').shape[0]):
 #plt.savefig(sys.argv[4] + '/images/importance.png')
 #plt.close()
 
+#print np.asarray(finalValues).shape
+#print np.asarray(pointOutArray).shape
+
+pointOutArray = np.asarray(pointOutArray)
+pointOutArray = np.reshape(pointOutArray, (pointOutArray.shape[1], -1))
 
 np.savetxt(sys.argv[4] + '/importance.out', finalValues, delimiter=',')
 np.savetxt(sys.argv[4] + '/individualImportance.out', pointOutArray, delimiter=',')
