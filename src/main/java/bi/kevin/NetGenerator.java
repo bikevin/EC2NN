@@ -133,9 +133,9 @@ public class NetGenerator {
         Caffe.LayerParameter.Builder[] outParams;
 
         if(predict){
-            outParams = new Caffe.LayerParameter.Builder[2];
-        } else {
             outParams = new Caffe.LayerParameter.Builder[3];
+        } else {
+            outParams = new Caffe.LayerParameter.Builder[4];
         }
 
 
@@ -151,22 +151,30 @@ public class NetGenerator {
                 .addBottom("innerBottom");
         outParams[1] = outputLayer;
 
+
+        outputLayer = Caffe.LayerParameter.newBuilder();
+
+        outputLayer.setName("accuracy").setType("Accuracy").addBottom("NeuronBottom").addBottom("label")
+                .addTop("accuracy");
+        outParams[2] = outputLayer;
+
+
         outputLayer = Caffe.LayerParameter.newBuilder();
 
         if(!predict) {
             if (layer.getNeurons() == 1) {
                 outputLayer.setName("loss").setType("EuclideanLoss").addBottom("NeuronBottom").addBottom("label")
                         .addTop("loss");
-                outParams[2] = outputLayer;
+                outParams[3] = outputLayer;
             } else {
                 outputLayer.setName("loss").setType("SoftmaxWithLoss").addBottom("NeuronBottom").addBottom("label")
                         .addTop("loss");
-                outParams[2] = outputLayer;
+                outParams[3] = outputLayer;
             }
             if(layer.getPhase() == 1){
-                outParams[2].addInclude(Caffe.NetStateRule.newBuilder().setPhase(Caffe.Phase.TRAIN));
+                outParams[3].addInclude(Caffe.NetStateRule.newBuilder().setPhase(Caffe.Phase.TRAIN));
             } else if(layer.getPhase() == 2){
-                outParams[2].addInclude(Caffe.NetStateRule.newBuilder().setPhase(Caffe.Phase.TEST));
+                outParams[3].addInclude(Caffe.NetStateRule.newBuilder().setPhase(Caffe.Phase.TEST));
             }
 
         }
