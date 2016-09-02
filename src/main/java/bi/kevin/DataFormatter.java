@@ -38,18 +38,21 @@ public class DataFormatter{
 
     public DataSet getAllData(){
 
+        //initialize the empty containers
         List<INDArray> inputs = new ArrayList<>();
         List<INDArray> labels = new ArrayList<>();
 
         for(Collection<Double> record : collection){
 
+            //return a dataset containing one point/row
             DataSet temp = getOneDatum(record);
 
+            //push the individual points to collections
             inputs.add(temp.getFeatureMatrix());
             labels.add(temp.getLabels());
         }
 
-
+        //put the datasets together into one big dataset
         return new DataSet(Nd4j.vstack(inputs.toArray(new INDArray[0])),
                 Nd4j.vstack(labels.toArray(new INDArray[0])));
     }
@@ -58,15 +61,18 @@ public class DataFormatter{
 
         List<Double> currentList;
 
+        //convert the collection into an arraylist
         if(record instanceof List){
             currentList = (List<Double>) record;
         } else {
             currentList = new ArrayList<>(record);
         }
 
+        //initialize the INDArrays
         INDArray label = Nd4j.create(labelIndicies.length);
         INDArray features = Nd4j.create(record.size() - labelIndicies.length);
 
+        //separate the arraylist into features and labels
         int featureCount = 0;
         int labelCount = 0;
         for(int i = 0; i < currentList.size(); i++){
@@ -84,15 +90,21 @@ public class DataFormatter{
             }
         }
 
+        //return the dataset with a single point in it
         return new DataSet(features, label);
     }
 
     public DataSet getAllDataNormalized(){
 
+        //normalize the data
         DataSet unNormalized = getAllData();
 
         DataNormalization normalizer = new NormalizerStandardize();
+        
+        //set the normalizer parameters - this doesn't actually normalize the dataset
         normalizer.fit(unNormalized);
+        
+        //this normalizes the dataset
         normalizer.transform(unNormalized);
 
         return unNormalized;
