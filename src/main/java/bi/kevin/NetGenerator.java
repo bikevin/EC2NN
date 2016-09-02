@@ -1,5 +1,6 @@
 package bi.kevin;
 
+import com.google.protobuf.Internal;
 import com.google.protobuf.TextFormat;
 
 import java.util.ArrayList;
@@ -49,7 +50,7 @@ public class NetGenerator {
 
         //build the data layers
         for(int i = 0; i < dataLayerCount; i++) {
-            parameters.add(dataLayerBuilder(layers[i]));
+            parameters.add(dataLayerBuilder(layers[i], predict));
         }
 
         //build the hidden layers
@@ -111,11 +112,14 @@ public class NetGenerator {
     }
 
     //input layer
-    private Caffe.LayerParameter dataLayerBuilder(Layer layer){
+    private Caffe.LayerParameter dataLayerBuilder(Layer layer, Boolean predict){
         Caffe.LayerParameter.Builder dataLayer = Caffe.LayerParameter.newBuilder();
-        dataLayer.setName("data").setType("HDF5Data").addTop("data").addTop("label")
+        dataLayer.setName("data").setType("HDF5Data").addTop("data")
                 .setHdf5DataParam(Caffe.HDF5DataParameter.newBuilder()
                         .setSource(userDir + "/" + layer.getDataFile()).setBatchSize(layer.getBatchSize()).build());
+        if(!predict){
+            dataLayer.addTop("label");
+        }
         if(layer.getPhase() == 1){
             dataLayer.addInclude(Caffe.NetStateRule.newBuilder().setPhase(Caffe.Phase.TRAIN));
         } else if(layer.getPhase() == 2){
