@@ -1,6 +1,7 @@
 import csv
 import numpy as np
 
+#convenience method with filenames - change this
 def getR2FromFile():
 	actual = []
 	with open("actual.txt") as f:
@@ -18,7 +19,7 @@ def getR2FromFile():
 	return calculateR2(actual, predicted)
 
 	
-
+#calculate r^2 using r^2 = 1 - SSR/SSQ
 def calculateR2(pred, act):
 	actualMean = np.mean(act)
 
