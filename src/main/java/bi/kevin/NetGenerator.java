@@ -156,16 +156,18 @@ public class NetGenerator {
         outParams[1] = outputLayer;
 
 
-        outputLayer = Caffe.LayerParameter.newBuilder();
-
-        outputLayer.setName("accuracy").setType("Accuracy").addBottom("NeuronBottom").addBottom("label")
-                .addTop("accuracy");
-        outParams[2] = outputLayer;
-
-
-        outputLayer = Caffe.LayerParameter.newBuilder();
 
         if(!predict) {
+
+            outputLayer = Caffe.LayerParameter.newBuilder();
+
+            outputLayer.setName("accuracy").setType("Accuracy").addBottom("NeuronBottom").addBottom("label")
+                    .addTop("accuracy");
+            outParams[2] = outputLayer;
+
+
+            outputLayer = Caffe.LayerParameter.newBuilder();
+
             if (layer.getNeurons() == 1) {
                 outputLayer.setName("loss").setType("EuclideanLoss").addBottom("NeuronBottom").addBottom("label")
                         .addTop("loss");
