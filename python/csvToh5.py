@@ -37,5 +37,8 @@ labelListNP = np.asarray(labelList, dtype=np.float64)
 #save it all to an H5 file with a data set "data" and a data set "label"
 f = h5py.File(sys.argv[3], 'w')
 f.create_dataset('data', data=dataListNP)
-f.create_dataset('label', data=labelListNP)
+
+if sys.argv[2].__len__() > 0:
+        f.create_dataset('label', data=labelListNP)
+
 f.close()
