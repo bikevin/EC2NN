@@ -137,7 +137,7 @@ public class NetGenerator {
         Caffe.LayerParameter.Builder[] outParams;
 
         if(predict){
-            outParams = new Caffe.LayerParameter.Builder[3];
+            outParams = new Caffe.LayerParameter.Builder[2];
         } else {
             outParams = new Caffe.LayerParameter.Builder[4];
         }
